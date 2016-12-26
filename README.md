@@ -46,7 +46,7 @@ textField.y = 300;
 this.addChild(textField);
 ```
 ### Future work:
-* *An Italic Format*
+* Rich Text Format
 * Multiple Font
 * Multiple Font Size
 
