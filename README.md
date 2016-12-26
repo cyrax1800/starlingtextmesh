@@ -14,7 +14,8 @@ A Customable TextField for starling with 1 DrawCall.
 * Use the Helper Pyhton in helper folder to make a .fnt and IconID.as Class from icons.xml file
 * Then finally place the file to bin folder. file that needed : font.png, font.xml, icons.fnt, [any font].fnt .
 
->**Important!**  :exclamation: :exclamation: in **icons.fnt** file, ```size```, ```lineHeight``` and ```base``` attribute must follow the **Main** font attribute
+>**Important!**  
+:exclamation: in **icons.fnt** file, ```size```, ```lineHeight``` and ```base``` attribute must follow the **Main** font attribute :exclamation:
 
 **Source Example**
 
