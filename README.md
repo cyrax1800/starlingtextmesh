@@ -10,9 +10,9 @@ A Customable TextField for starling with 1 DrawCall.
 
 
 ### How to use:
-* The BitmapFont Atlas and Icon Atlas must in 1 TextureAtlas
-* Use the Helper Pyhton in helper folder to make a .fnt and IconID.as Class from icons.xml file
-* Then finally place the file to bin folder. file that needed : font.png, font.xml, icons.fnt, [any font].fnt .
+* The texture for BitmapFont and Icon must be in the same TextureAtlas
+* Use the Python executeable helper in helper folder to make a .fnt and IconID.as Class from icons.xml file
+* Then finally place the file to bin folder. File that needed : font.png, font.xml, icons.fnt, [any font].fnt .
 
 >**Important!**  
 :exclamation: in **icons.fnt** file, ```size```, ```lineHeight``` and ```base``` attribute must follow the **Main** font attribute :exclamation:
@@ -24,9 +24,9 @@ var fontAtlas:TextureAtlas = assetManager.getTextureAtlas("font");
 var textMeshFont:TextMeshFont = new TextMeshFont(fontAtlas.getTexture("poetsen"), assetManager.getXml("poetsen"));
 textMeshFont.parseIconFontXml(fontAtlas.getTexture("icons"), assetManager.getXml("icons"),"poetsen");
 
-// Sarling 1.x
+// Starling 1.x
 TextMesh.registerBitmapFont(textMeshFont, "poetsen");
-// Sarling 2.x
+// Starling 2.x
 TextMesh.registerCompositor(textMeshFont, "poetsen");
 			
 var text:String = "This is a banana (" + IconID.getIcons("banana") + ")\n" +
@@ -45,9 +45,6 @@ textField.x = 512;
 textField.y = 300;
 this.addChild(textField);
 ```
-
-**Problem:** Has a bug in starling 1.x using color tag and default color is white. (*Fix by using tricky way*)
-
 ### Future work:
 * *An Italic Format*
 * Multiple Font
