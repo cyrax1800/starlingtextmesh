@@ -39,7 +39,7 @@ package
 			TextMesh.registerCompositor(textMeshFont, "poetsen");
 			
 			var text:String = "This is a banana (" + IconID.getIcons("banana") + ")\n" +
-							"Can using hardcode too. eg:<sprite=\"1\">\n" +
+							"Can using hardcode too. eg:<sprite=1>\n" +
 							"<color=#ff0000>This text is red color</color> and <#00ff00>this is green text with different tag</color>\n" +
 							"<#0000ff> this text will be blue till end" + IconID.getIcons("soda");
 			

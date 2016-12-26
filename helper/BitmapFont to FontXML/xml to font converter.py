@@ -57,7 +57,7 @@ file.write("\n");
 file.write("\t\tpublic static function getIcons(name:String):String{\n")
 file.write("\t\t\tname = name.toLowerCase().replace(/ /g, \"_\");\n")
 file.write("\t\t\tif (iconDictionary[name] == undefined) throw new ArgumentError(name + \" not in dictionary\");\n")
-file.write("\t\t\treturn \"<sprite=\\\"\" + iconDictionary[name] + \"\\\">\";\n")
+file.write("\t\t\treturn \"<sprite=\" + iconDictionary[name] + \">\";\n")
 file.write("\t\t}\n\n")
 file.write("\t}\n\n")
 file.write("}\n\n")

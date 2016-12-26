@@ -27,7 +27,7 @@ package
 		public static function getIcons(name:String):String{
 			name = name.toLowerCase().replace(/ /g, "_");
 			if (iconDictionary[name] == undefined) throw new ArgumentError(name + " not in dictionary");
-			return "<sprite=\"" + iconDictionary[name] + "\">";
+			return "<sprite=" + iconDictionary[name] + ">";
 		}
 		
 	}
