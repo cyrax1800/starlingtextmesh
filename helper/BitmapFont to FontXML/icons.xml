@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:0b16bbdc5efdf235dac519c9c529ab93:9f28aaa35549736e5c4184eb7a80193e:90a68ccae83e65ad8ceeb861f0a8529d$ -->
+<TextureAtlas imagePath="icons.png" width="128" height="128">
+    <SubTexture name="apple" x="33" y="96" width="23" height="24"/>
+    <SubTexture name="banana" x="3" y="99" width="26" height="25"/>
+    <SubTexture name="coffee" x="64" y="3" width="56" height="55"/>
+    <SubTexture name="fried_fries" x="29" y="62" width="29" height="30"/>
+    <SubTexture name="hamburger" x="60" y="96" width="25" height="23"/>
+    <SubTexture name="mushroom" x="3" y="3" width="57" height="55"/>
+    <SubTexture name="soda" x="3" y="62" width="22" height="33"/>
+</TextureAtlas>

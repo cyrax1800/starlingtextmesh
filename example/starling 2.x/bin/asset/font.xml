@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:091c716abe8e4a4216fc7f3e5553f756:87c4a4a58c7bbd0fbf4dbb9645071671:9655158b803966c4002408bc83f2b17e$ -->
+<TextureAtlas imagePath="font.png" width="1024" height="1024">
+    <SubTexture name="icons" x="771" y="3" width="121" height="125" frameX="-1" frameY="-1" frameWidth="128" frameHeight="128"/>
+    <SubTexture name="poetsen" x="3" y="3" width="764" height="510" frameX="-1" frameY="-1" frameWidth="768" frameHeight="512"/>
+</TextureAtlas>
