@@ -52,4 +52,4 @@ this.addChild(textField);
 
 
 ### ------------------------
-Any Suggestion or facing a problem, can ask me at *[mchen0358@gmail.com]()*
+Any Suggestion or facing a problem or want to contribute, can ask me at *[mchen0358@gmail.com]()*
