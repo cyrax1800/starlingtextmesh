@@ -123,6 +123,8 @@ package com.michael.textmesh
         
         private var mImage:Image;
         private var mQuadBatch:QuadBatch;
+		
+		private var mIsRTL:Boolean;
         
         /** Helper objects. */
         private static var sHelperMatrix:Matrix = new Matrix();
@@ -130,7 +132,7 @@ package com.michael.textmesh
         
         /** Create a new text field with the given properties. */
         public function TextMesh(width:int, height:int, text:String, fontName:String="Verdana",
-                                  fontSize:Number=12, color:uint=0x0, bold:Boolean=false)
+                                  fontSize:Number=12, color:uint=0x0, bold:Boolean=false, isRTL:Boolean = false)
         {
             mText = text ? text : "";
             mFontSize = fontSize;
@@ -146,6 +148,8 @@ package com.michael.textmesh
             this.fontName = fontName;
             
             addEventListener(Event.FLATTEN, onFlatten);
+			
+			mIsRTL = isRTL;
         }
         
         /** Disposes the underlying texture data. */
@@ -462,7 +466,9 @@ package com.michael.textmesh
                 height = int.MAX_VALUE;
                 vAlign = VAlign.TOP;
             }
-            
+            if (bitmapFont is TextMeshFont){
+				(bitmapFont as TextMeshFont).isRTL = mIsRTL;
+			}
             bitmapFont.fillQuadBatch(mQuadBatch, width, height, mText,
                     mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning, mLeading);
             
@@ -841,6 +847,9 @@ package com.michael.textmesh
             
             return fonts;
         }
+		
+		public function get isRTL():Boolean { return mIsRTL; }
+		public function set isRTL(value:Boolean):void { mIsRTL = value;}
 
         // optimization for 'toLowerCase' calls
 

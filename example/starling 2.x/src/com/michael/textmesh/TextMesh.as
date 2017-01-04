@@ -97,6 +97,7 @@ package com.michael.textmesh
         private static const COMPOSITOR_DATA_NAME:String = "starling.display.TextField.compositors";
 
         private var _text:String;
+        private var _isRTL:Boolean;
         private var _options:TextOptions;
         private var _format:TextFormat;
         private var _textBounds:Rectangle;
@@ -114,7 +115,7 @@ package com.michael.textmesh
         private var _helperFormat:TextFormat = new TextFormat();
 
         /** Create a new text field with the given properties. */
-        public function TextMesh(width:int, height:int, text:String="", format:TextFormat=null)
+        public function TextMesh(width:int, height:int, text:String = "", format:TextFormat = null, isRTL:Boolean = false)
         {
             _text = text ? text : "";
             _hitArea = new Rectangle(0, 0, width, height);
@@ -129,6 +130,8 @@ package com.michael.textmesh
             _meshBatch.touchable = false;
             _meshBatch.pixelSnapping = true;
             addChild(_meshBatch);
+			
+			_isRTL = isRTL;
         }
         
         /** Disposes the underlying texture data. */
@@ -198,6 +201,9 @@ package com.michael.textmesh
             _meshBatch.x = _meshBatch.y = 0;
             _options.textureScale = Starling.contentScaleFactor;
             _options.textureFormat = sDefaultTextureFormat;
+			if (_compositor is TextMeshFont){
+				(_compositor as TextMeshFont).isRTL = isRTL;
+			}
             _compositor.fillMeshBatch(_meshBatch, width, height, _text, format, _options);
 
             if (_style) _meshBatch.style = _style;
@@ -557,5 +563,8 @@ package com.michael.textmesh
             }
             return result;
         }
+		
+		public function get isRTL():Boolean { return _isRTL; }
+		public function set isRTL(value:Boolean):void { _isRTL = value; }
     }
 }

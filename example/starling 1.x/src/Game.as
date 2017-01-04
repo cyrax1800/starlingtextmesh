@@ -38,15 +38,30 @@ package
 			TextMesh.registerBitmapFont(textMeshFont, "poetsen");
 			
 			var text:String = "This is a banana (" + IconID.getIcons("banana") + ")\n" +
-							"Can using hardcode too. eg:<sprite=1>\n" +
+							"Can using hardcode too. eg:<sprite=\"1\">\n" +
 							"<color=#ff0000>This text is red color</color> and <#00ff00>this is green text with different tag</color>\n" +
 							"<#0000ff> this text will be blue till end" + IconID.getIcons("soda");
 							
 			var textField:TextMesh = new TextMesh(1024, 400, text , "poetsen", 46, 0xffffff);
 			textField.alignPivot();
 			textField.x = 512;
-			textField.y = 300;
-			textField.border = true;
+			textField.y = 200;
+			this.addChild(textField);
+			
+			text = "Original Text";
+			
+			var textField:TextMesh = new TextMesh(1024, 200, text , "poetsen", 46, 0xffffff);
+			textField.alignPivot();
+			textField.x = 512;
+			textField.y = 400;
+			this.addChild(textField);
+			
+			text = "Original Text";
+			
+			var textField:TextMesh = new TextMesh(1024, 200, text , "poetsen", 46, 0xffffff, false, true);
+			textField.alignPivot();
+			textField.x = 512;
+			textField.y = 500;
 			this.addChild(textField);
 		}
 		

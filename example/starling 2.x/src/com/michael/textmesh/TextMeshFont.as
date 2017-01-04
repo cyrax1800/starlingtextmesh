@@ -15,6 +15,7 @@ package com.michael.textmesh
 	import starling.display.Image;
 	import starling.display.MeshBatch;
 	import starling.display.Sprite;
+	import starling.styles.DistanceFieldStyle;
 	import starling.text.BitmapChar;
 	import starling.text.ITextCompositor;
 	import starling.text.TextFormat;
@@ -62,6 +63,7 @@ package com.michael.textmesh
 		private var m_htmlTag:String;
 		private var m_actualColor:uint;
 		private var m_htmlColor:uint;
+		private var _isRTL:Boolean;
         
         /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
          *  If you don't pass any data, the "mini" font will be created. */
@@ -421,6 +423,24 @@ package com.michael.textmesh
                 else
                     finished = true; 
             } // while (!finished)
+			
+			if (isRTL){
+				for (var i:int = 0; i < sLines.length; i++){
+					var currentLine:Vector.<CharLocation> = sLines[i].slice();
+					currentX = 0;
+					currentLine = currentLine.reverse();
+					for (var j:int = 0; j < currentLine.length ; j++){
+						currentLine[j].x = currentX;
+						finalScale = 1
+						if (currentLine[j].char.isIcon){
+							finalScale = getChar(84).height / currentLine[j].char.height;
+						}
+						currentX += currentLine[j].char.xAdvance * finalScale;
+					}
+					sLines[i] = currentLine;
+				}	
+			}
+			
             
             var finalLocations:Vector.<CharLocation> = CharLocation.vectorFromPool();
             var numLines:int = sLines.length;
@@ -519,6 +539,9 @@ package com.michael.textmesh
 		
 		public function get actualColor():uint { return m_actualColor; }
 		public function set actualColor(value:uint):void { m_actualColor = value; }
+		
+		public function get isRTL():Boolean { return _isRTL; }
+		public function set isRTL(value:Boolean):void {	_isRTL = value;	}
 		
 		public function parseIconFontXml(texture:Texture, fontXml:XML, name:String):void
         {

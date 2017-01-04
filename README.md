@@ -3,10 +3,12 @@ A Customable TextField for starling with 1 DrawCall.
 
 ![Drawcall](image/drawcall.png) 
 ![Example](image/example.png)
+![Right to Left](image/righttoleft.png)
 
 ### Feature
 * Using BitmapFont along with custom icon (```<sprite="2"> ``` or ```IconID.getIcons("texture_name")```)
 * Change color inline (html style) (```<color=#ff0000>red</color>``` or ``` <#ff0000>red</color> ```
+* Right to Left (RTL) format.
 
 
 ### How to use:
@@ -15,7 +17,9 @@ A Customable TextField for starling with 1 DrawCall.
 * Then finally place the file to bin folder. File that needed : font.png, font.xml, icons.fnt, [any font].fnt .
 
 >**Important!**  
-:exclamation: in **icons.fnt** file, ```size```, ```lineHeight``` and ```base``` attribute must follow the **Main** font attribute :exclamation:
+> :exclamation: in **icons.fnt** file, ```size```, ```lineHeight``` and ```base``` attribute must follow the **Main** font attribute :exclamation: 
+>
+> :exclamation: in **Starling 1.x** version, ```BitmapFont``` Class must implement ```ITextCompositor``` :exclamation:
 
 **Source Example**
 
@@ -42,13 +46,36 @@ var textField:TextMesh = new TextMesh(1024, 400, text , "poetsen", 46, 0xffffff)
 var textField:TextMesh = new TextMesh(1024, 400, text , new TextFormat("poetsen", 46, 0xffffff));
 textField.alignPivot();
 textField.x = 512;
-textField.y = 300;
+textField.y = 200;
 this.addChild(textField);
+
+text = "Original Text";
+
+// Starling 1.x
+var textField:TextMesh = new TextMesh(1024, 200, text , "poetsen", 46, 0xffffff);
+// Starling 2.x
+var textField:TextMesh = new TextMesh(1024, 400, text , new TextFormat("poetsen", 46, 0xffffff));
+textField.alignPivot();
+textField.x = 512;
+textField.y = 400;
+this.addChild(textField);
+
+// Right to Left
+text = "Original Text";
+
+// Starling 1.x
+var textField:TextMesh = new TextMesh(1024, 200, text , "poetsen", 46, 0xffffff, false, true);
+// Starling 2.x
+var textField:TextMesh = new TextMesh(1024, 400, text , new TextFormat("poetsen", 46, 0xffffff), true);
+textField.alignPivot();
+textField.x = 512;
+textField.y = 500;
+this.addChild(textField);
+
 ```
 ### Future work:
 * Multiple Font
 * Multiple Font Size
-* RTL Support
 
 
 ### ------------------------
