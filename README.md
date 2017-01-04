@@ -46,9 +46,9 @@ textField.y = 300;
 this.addChild(textField);
 ```
 ### Future work:
-* Rich Text Format
 * Multiple Font
 * Multiple Font Size
+* RTL Support
 
 
 ### ------------------------
