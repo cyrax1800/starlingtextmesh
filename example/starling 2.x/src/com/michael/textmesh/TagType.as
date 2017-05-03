@@ -14,6 +14,7 @@ package com.michael.textmesh
 		
 		public static const Color:int = 0;
 		public static const Sprite:int = 1;
+		public static const FontStyle:int = 2;
 		
 		public function TagType() 
 		{

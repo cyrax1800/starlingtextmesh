@@ -23,7 +23,6 @@ package com.michael.textmesh
         }
 		
 		public function get isIcon():Boolean { return _isIcon; }
-		
 		public function set isIcon(value:Boolean):void { _isIcon = value; }
     }
 

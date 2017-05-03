@@ -10,12 +10,15 @@
 
 package com.michael.textmesh 
 {
+	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	import starling.display.Image;
+	import starling.display.Mesh;
 	import starling.display.MeshBatch;
 	import starling.display.Sprite;
 	import starling.styles.DistanceFieldStyle;
+	import starling.styles.MeshStyle;
 	import starling.text.BitmapChar;
 	import starling.text.ITextCompositor;
 	import starling.text.TextFormat;
@@ -24,6 +27,7 @@ package com.michael.textmesh
 	import starling.textures.TextureSmoothing;
 	import starling.utils.Align;
 	import starling.utils.StringUtil;
+	import starling.utils.deg2rad;
 	/**
 	 * ...
 	 * @author Michael
@@ -63,7 +67,12 @@ package com.michael.textmesh
 		private var m_htmlTag:String;
 		private var m_actualColor:uint;
 		private var m_htmlColor:uint;
+		private var m_transparency:Number;
+		private var m_italic:Boolean;
+		private var m_bold:Boolean;
+		private var m_underline:Boolean;
 		private var _isRTL:Boolean;
+		public var distanceFieldStyle:DistanceFieldStyle;
         
         /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
          *  If you don't pass any data, the "mini" font will be created. */
@@ -87,6 +96,7 @@ package com.michael.textmesh
             _chars = new Dictionary();
             _charsImage = new Dictionary();
             _helperImage = new Image(texture);
+			distanceFieldStyle = new DistanceFieldStyle();
             
             parseFontXml(fontXml);
 		}
@@ -237,7 +247,7 @@ package com.michael.textmesh
                     width, height, text, format, options);
             var numChars:int = charLocations.length;
             _helperImage.color = format.color;
-            
+			
             for (var i:int=0; i<numChars; ++i)
             {
                 var charLocation:CharLocation = charLocations[i];
@@ -247,9 +257,13 @@ package com.michael.textmesh
                 _helperImage.y = charLocation.y;
                 _helperImage.scale = charLocation.scale;
                 _helperImage.color = charLocation.color;
-                meshBatch.addMesh(_helperImage);
+				if (charLocation.italic) _helperImage.skewX = deg2rad(10);
+				else _helperImage.skewX = deg2rad(0);
+				
+				meshBatch.addMesh(_helperImage, null, charLocation.transparent);
+                
             }
-
+			
             CharLocation.rechargePool();
         }
 
@@ -285,6 +299,10 @@ package com.michael.textmesh
             var i:int, j:int;
 			
 			m_htmlColor = actualColor;
+			m_italic = false;
+			m_bold = false;
+			m_underline = false;
+			m_transparency = 1;
 
             if (fontSize < 0) fontSize *= -_size;
             
@@ -309,15 +327,20 @@ package com.michael.textmesh
                         var lineFull:Boolean = false;
                         var charID:int = text.charCodeAt(i);
 						var char:TextMeshChar;
+						var totalTagLength:int = 0;
 						if (charID == 60){ // '<'
 							var validateTagObject:Object = validateHtmlTag(text, i + 1);
 							if (validateTagObject["isValidHtmlTag"]){
 								i = endIndex;
+								totalTagLength = validateTagObject["tagLength"];
 								if (validateTagObject["type"] == TagType.Sprite){
 									char = getImageChar(validateTagObject["value"]);
 								}else if (validateTagObject["type"] == TagType.Color){
-									charID = CHAR_SPACE;
-									char = getChar(CHAR_SPACE);
+									char = null;
+									lastWhiteSpace = endIndex;
+								}else if (validateTagObject["type"] == TagType.FontStyle){
+									char = null;
+									lastWhiteSpace = endIndex;
 								}
 							}else{
 								char = getChar(charID);
@@ -325,10 +348,14 @@ package com.michael.textmesh
 						}else{
 							char = getChar(charID);
 						}
-                        
+						
                         if (charID == CHAR_NEWLINE || charID == CHAR_CARRIAGE_RETURN)
                         {
                             lineFull = true;
+                        }
+						else if (char == null && charID == 60)
+                        {
+							
                         }
                         else if (char == null)
                         {
@@ -342,19 +369,39 @@ package com.michael.textmesh
                             if (kerning)
                                 currentX += char.getKerning(lastCharID);
                             
+							if (italic && !char.isIcon){
+								if (currentLine.length != 0 && currentLine[currentLine.length - 1].italic){
+									currentX += currentLine[currentLine.length - 1].char.xAdvance;
+								}else if (currentLine.length != 0 && !currentLine[currentLine.length - 1].italic){
+									currentX += Math.tan(deg2rad(10)) * char.height;
+								}
+							}else{
+								if (currentLine.length != 0 && currentLine[currentLine.length - 1].italic){
+									currentX += currentLine[currentLine.length - 1].char.xAdvance;
+								}
+							}
+							
                             charLocation = CharLocation.instanceFromPool(char);
 							charLocation.color = m_htmlColor;
+							charLocation.transparent = m_transparency;
 							if (char.isIcon){
 								finalScale = getChar(84).height / char.height;// 84 = charcter "t"
 								charLocation.y = currentY + getChar(84).yOffset;
+								charLocation.tagLength = totalTagLength;
 							}else{
 								finalScale = 1
 								charLocation.y = currentY + char.yOffset;
+								charLocation.italic = m_italic;
+								charLocation.tagLength = 0;
 							}
                             charLocation.x = currentX + char.xOffset;
                             currentLine[currentLine.length] = charLocation; // push
                             
-                            currentX += char.xAdvance * finalScale;
+							if (!italic){
+								currentX += char.xAdvance * finalScale;
+							}else{
+								if(char.isIcon)currentX += char.xAdvance * finalScale;
+							}
                             lastCharID = charID;
                             
                             if (charLocation.x + char.width > containerWidth)
@@ -366,15 +413,27 @@ package com.michael.textmesh
                                         break;
 
                                     // remove characters and add them again to next line
-                                    var numCharsToRemove:int = lastWhiteSpace == -1 ? 1 : i - lastWhiteSpace;
+									var numCharsToRemove:int 
+									numCharsToRemove = lastWhiteSpace == -1 ? 1 : i - lastWhiteSpace - totalTagLength;
 
-                                    for (j=0; j<numCharsToRemove; ++j) // faster than 'splice'
+                                    var totalMinusCharTag:int = 0;
+									var hasTag:Boolean = false;
+									var totalNormalChar:int = 0;
+									for (j = 0; j < numCharsToRemove; ++j){ // faster than 'splice'
+										numCharsToRemove -= currentLine[currentLine.length - 1].tagLength + 1;
+										totalMinusCharTag += currentLine[currentLine.length - 1].tagLength + 1;
+										if (currentLine[currentLine.length - 1].tagLength > 0){
+											hasTag = true;
+										}
                                         currentLine.pop();
+									}
 
                                     if (currentLine.length == 0)
                                         break;
 
-                                    i -= numCharsToRemove;
+									if (!hasTag) currentLine.pop();
+									i -= totalTagLength + numCharsToRemove + totalMinusCharTag;
+                                    //i -= numCharsToRemove;
                                 }
                                 else
                                 {
@@ -398,8 +457,8 @@ package com.michael.textmesh
                         else if (lineFull)
                         {
                             sLines[sLines.length] = currentLine; // push
-                            
-                            if (lastWhiteSpace == i)
+							
+                            if (lastWhiteSpace == i && totalTagLength == 0)
                                 currentLine.pop();
                             
                             if (currentY + leading + 2 * _lineHeight <= containerHeight)
@@ -441,7 +500,6 @@ package com.michael.textmesh
 				}	
 			}
 			
-            
             var finalLocations:Vector.<CharLocation> = CharLocation.vectorFromPool();
             var numLines:int = sLines.length;
             var bottom:Number = currentY + _lineHeight;
@@ -543,6 +601,18 @@ package com.michael.textmesh
 		public function get isRTL():Boolean { return _isRTL; }
 		public function set isRTL(value:Boolean):void {	_isRTL = value;	}
 		
+		public function get italic():Boolean { return m_italic; }
+		public function set italic(value:Boolean):void { m_italic = value; }
+		
+		public function get bold():Boolean { return m_bold; }
+		public function set bold(value:Boolean):void { m_bold = value; }
+		
+		public function get underline():Boolean { return m_underline; }
+		public function set underline(value:Boolean):void {	m_underline = value; }
+		
+		public function get transparency():Number { return m_transparency; }
+		public function set transparency(value:Number):void { m_transparency = value; }
+		
 		public function parseIconFontXml(texture:Texture, fontXml:XML, name:String):void
         {
             var scale:Number = texture.scale;
@@ -550,10 +620,10 @@ package com.michael.textmesh
             var frameX:Number = frame ? frame.x : 0;
             var frameY:Number = frame ? frame.y : 0;
             
-            _name = StringUtil.clean(fontXml.info.@face);
-            _size = parseFloat(fontXml.info.@size) / scale;
-            _lineHeight = parseFloat(fontXml.common.@lineHeight) / scale;
-            _baseline = parseFloat(fontXml.common.@base) / scale;
+            //_name = StringUtil.clean(fontXml.info.@face);
+            //_size = parseFloat(fontXml.info.@size) / scale;
+            //_lineHeight = parseFloat(fontXml.common.@lineHeight) / scale;
+            //_baseline = parseFloat(fontXml.common.@base) / scale;
             
             if (fontXml.info.@smooth.toString() == "0")
                 smoothing = TextureSmoothing.NONE;
@@ -644,6 +714,7 @@ package com.michael.textmesh
 			}
 			
 			tmpObj["isValidHtmlTag"] = isValidHtmlTag;
+			tmpObj["tagLength"] = endIndex - startIndex;
 			
 			if (m_htmlTag.charAt(0) == "#" && m_htmlTag.length == 7) // if Tag begins with # and contains 7 characters.  <#ffffff>
             {
@@ -657,11 +728,33 @@ package com.michael.textmesh
 					tmpObj["type"] = TagType.Color;
 					if (m_htmlTag.charAt(6) == "#" && m_htmlTag.length == 13){ // <color=#ffffff>
 						m_htmlColor = uint("0x" + m_htmlTag.substr(7));
+					}else if (m_htmlTag.charAt(6) == "#" && m_htmlTag.length == 15){ // <color=#ffffffff>
+						m_htmlColor = uint("0x" + m_htmlTag.substr(9));
+						m_transparency = uint("0x" + m_htmlTag.substr(7, 2)) / 0xff // 0xff;
 					}else if (m_htmlTag.length == 6){ // </color>
 						m_htmlColor = actualColor;
+						m_transparency = 1;
 					}else{
 						tmpObj["isValidHtmlTag"] = false;
 					}
+				}else if (m_htmlTag == "i" && m_htmlTag.length == 1){
+					tmpObj["type"] = TagType.FontStyle;
+					m_italic = true;
+				}else if (m_htmlTag == "/i" && m_htmlTag.length == 2){
+					tmpObj["type"] = TagType.FontStyle;
+					m_italic = false;
+				}else if (m_htmlTag == "b" && m_htmlTag.length == 1){
+					tmpObj["type"] = TagType.FontStyle;
+					m_bold = true;
+				}else if (m_htmlTag == "/b" && m_htmlTag.length == 2){
+					tmpObj["type"] = TagType.FontStyle;
+					m_bold = false;
+				}else if (m_htmlTag == "u" && m_htmlTag.length == 1){
+					tmpObj["type"] = TagType.FontStyle;
+					m_underline = true;
+				}else if (m_htmlTag == "/u" && m_htmlTag.length == 2){
+					tmpObj["type"] = TagType.FontStyle;
+					m_underline = false;
 				}
 			}
 			
@@ -678,7 +771,12 @@ class CharLocation
     public var scale:Number;
     public var x:Number;
     public var y:Number;
+    public var tagLength:int;
+    public var transparent:Number;
 	public var color:uint;
+	public var italic:Boolean;
+	public var bold:Boolean;
+	public var underline:Boolean;
     
     public function CharLocation(char:TextMeshChar)
     {
